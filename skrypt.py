@@ -1159,4 +1159,79 @@ Reshape your data either using array.reshape(-1, 1) if your data has a single fe
 >>> print(y_pred)
 [1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.
  1.]
+>>> arr
+array([409,  50, 133, 123, 435,  94,  76, 133, 279,  15,  18, 148, 112,
+       288, 278,  95,   3, 373, 261, 328, 116,  46,  21, 129,   4])
+>>> ar2
+array([[409],
+       [ 50],
+       [133],
+       [123],
+       [435],
+       [ 94],
+       [ 76],
+       [133],
+       [279],
+       [ 15],
+       [ 18],
+       [148],
+       [112],
+       [288],
+       [278],
+       [ 95],
+       [  3],
+       [373],
+       [261],
+       [328],
+       [116],
+       [ 46],
+       [ 21],
+       [129],
+       [  4]])
+>>> ar3 = ar2 + ar2
+>>> ar3
+array([[818],
+       [100],
+       [266],
+       [246],
+       [870],
+       [188],
+       [152],
+       [266],
+       [558],
+       [ 30],
+       [ 36],
+       [296],
+       [224],
+       [576],
+       [556],
+       [190],
+       [  6],
+       [746],
+       [522],
+       [656],
+       [232],
+       [ 92],
+       [ 42],
+       [258],
+       [  8]])
+>>> ar2 = arr.reshape(1,-1)
+>>> ar2
+array([[409,  50, 133, 123, 435,  94,  76, 133, 279,  15,  18, 148, 112,
+        288, 278,  95,   3, 373, 261, 328, 116,  46,  21, 129,   4]])
+>>> y_pred = y_pred.predict(ar2)
+Traceback (most recent call last):
+  File "<pyshell#54>", line 1, in <module>
+    y_pred = y_pred.predict(ar2)
+AttributeError: 'numpy.ndarray' object has no attribute 'predict'
+>>> y_pred = gnb.fit(dat, tar)
+>>> y_pred = y_pred.predict(ar2)
+>>> print(y_pred)
+[1.]
+>>> y_pred = gnb.fit(dat, tar)
+>>> arr = np.array(counter(scrap('https://pl.wikipedia.org/wiki/Okr%C4%99ty_podwodne_typu_Wilk')))
+>>> ar2 = arr.reshape(1,-1)
+>>> pred = y_pred.predict(ar2)
+>>> print(pred)
+[0.]
 >>> 
