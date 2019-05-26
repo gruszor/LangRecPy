@@ -6,7 +6,7 @@ def scrap(webpage):
     else:
         return None
     
-def count(string):
+def counter(string):
     alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','w','x','y','z']
     #return {letter: string.count(letter) for letter in alphabet}
     return [string.count(letter) for letter in alphabet]
@@ -16,9 +16,8 @@ def csvin(txt, file):
         writer = csv.writer(f)
         writer.writerow(txt)    
 
-    
-    #with open(file, 'a') as sheet:
-     #   sheet.write(txt)
+def readInput(file):
+    return np.genfromtxt(file, delimiter=',')
 
 
 
@@ -28,47 +27,46 @@ import requests
 from bs4 import BeautifulSoup
 import numpy as np
 import csv
+from enum import IntEnum
 
-#from numpy import genfromtxt
+#LERNING
+#data format: webpage, language(acronym)
+with open('dataToLearn.csv','r') as file:
+    learn = csv.reader(file, dialect='excel')
+#learn = np.genfromtxt('dataToLearn.csv', delimiter=',')
+#learn = readInput('dataToLearn.csv')
 
-r = requests.get('https://www.pythonforbeginners.com/beautifulsoup/beautifulsoup-4-python')
+    for index in learn:
+        print(index)
+  
+#for index in csv.reader('dataToLearn'):    
+        if index[1] == 'pl':             #TEMP CONSTRUCTION ENUM with languages IN THE FUTURE
+            csvin('0','target.csv')
+        else:
+            csvin('1','target.csv')
+
+        csvin(counter(scrap(index[0])),'data.csv')
+
+'''
+r = requests.get('https://pl.wikipedia.org/wiki/Primus_Classic')
 print (r.text)
 soup = BeautifulSoup(r.text, 'html.parser')
 
-
-'''
-a = time.perf_counter()
-print(Counter(soup.get_text())['a'])
-b = time.perf_counter()
-print(soup.get_text().count('a'))
-c = time.perf_counter()
-
-print(b-a,c-b)
-
-alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','w','x','y','z']
-
-for letter in alphabet:
-    stats = {}
-    stats[letter] = soup.get_text().count(letter)
-
-print(stats)    
-'''
 alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','w','x','y','z']
 stats = {letter: (soup.get_text().lower()).count(letter) for letter in alphabet}
 statss = [(soup.get_text().lower()).count(letter) for letter in alphabet]
-print(stats)  
+print(soup.get_text())
 
 with open('model1','w') as plik:
     plik.write(str(stats))
-    plik.write('cipsko')
+    plik.write('sko')
 
 with open('model1','r') as plik:
     print(plik.read())
 
-a = ['ang',1,2,3,4]
-b = 'dupsko'
+a = [1,2,3,4]
+b = 'duko'
 c = ' no nwm '
-
 
 csvin(a,'csvtst.csv')
 csvin(b,'csvtst.csv')
@@ -79,3 +77,4 @@ csvin(a,'csvtst2.csv')
 csvin(a,'csvtst2.csv')
 
 my_data = np.genfromtxt('csvtst2.csv', delimiter=',')
+'''
