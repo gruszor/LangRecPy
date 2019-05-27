@@ -1,3 +1,6 @@
+languages = {'pl' : 0, 'eng' : 1, 'de' : 2, 'oc' : 3, 'lt' : 4, 'pt' : 5, 'es' : 6}
+inverseLanguages = {val : key for key, val in languages.items()}
+
 def scrap(webpage):
     r = requests.get(webpage)
     if(r.status_code == 200):
@@ -19,7 +22,6 @@ def readInput(file):
     return np.genfromtxt(file, delimiter=',')
 
 def prepareDataToLearn(learn_csv = 'dataToLearn.csv', target_csv = 'target.csv', data_csv = 'data.csv'):
-    languages = {'pl' : 0, 'eng' : 1}
     
     open(target_csv, 'w').close()
     open(data_csv, 'w').close()
@@ -39,12 +41,11 @@ def makeModel(model_joblib = 'model.joblib', target_csv = 'target.csv', data_csv
     dump(trainedModel, model_joblib)
 
 def makePrediction(webpage, model_joblib = 'model.joblib'):
-    languages = {0 : pl', 1 : 'eng'} 
     
     model = load(model_joblib)
-    arr = (np.array(counter(scrap(webpage)))).reshape(1,-1)
+    arr = (np.array(letterCounter(scrap(webpage)))).reshape(1,-1)
     prediction = model.predict(arr)
-    return languages[prediction]
+    return inverseLanguages[prediction[0]]
 
 ##########################################################################################################    
 import requests
@@ -54,47 +55,34 @@ import csv
 from sklearn.naive_bayes import GaussianNB
 from joblib import dump, load
 
-#prepareDataToLearn()
-'''
-#LERNING
-#data format: webpage, language(acronym)
-with open('dataToLearn.csv','r') as file:
-    learn = csv.reader(file, dialect='excel')
-    for index in learn:
-        if index[1] == 'pl':             #TEMP CONSTRUCTION ENUM with languages IN THE FUTURE
-            csvin('0','target.csv')
+
+print("welcome in program which recognize languages from webpages!")
+
+while True:
+    print("Would you like to make model or predict something?")
+    a = int(input("1 - make model \n2 - predict\n0 - exit\n"))
+    if a == 1:
+        
+        inDataToLearn = input("enter a file which consist data to learn from or leave it empty if you want to choose deflaut one\n\nADD ' .csv ' AT THE END!!!\n")
+        if inDataToLearn != "":
+            prepareDataToLearn(inDataToLearn)
         else:
-            csvin('1','target.csv')
-        csvin(counter(scrap(index[0])),'data.csv')
-'''
-'''
-r = requests.get('https://pl.wikipedia.org/wiki/Primus_Classic')
-print (r.text)
-soup = BeautifulSoup(r.text, 'html.parser')
-
-alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','w','x','y','z']
-stats = {letter: (soup.get_text().lower()).count(letter) for letter in alphabet}
-statss = [(soup.get_text().lower()).count(letter) for letter in alphabet]
-print(soup.get_text())
-
-with open('model1','w') as plik:
-    plik.write(str(stats))
-    plik.write('sko')
-
-with open('model1','r') as plik:
-    print(plik.read())
-
-a = [1,2,3,4]
-b = 'duko'
-c = ' no nwm '
-
-csvin(a,'csvtst.csv')
-csvin(b,'csvtst.csv')
-csvin(c,'csvtst.csv')
-csvin(statss,'csvtst.csv')
-
-csvin(a,'csvtst2.csv')
-csvin(a,'csvtst2.csv')
-
-my_data = np.genfromtxt('csvtst2.csv', delimiter=',')
-'''
+            prepareDataToLearn()
+            
+        modelName = input("name the model which you are creating now or leave it empty\n\nADD ' .joblib ' AT THE END!!!\n")
+        if modelName != "":
+            makeModel(modelName)
+        else:
+            makeModel()    
+        print("Congratulations you have made your own model!")
+        
+    if a == 2:
+        modelName = input("name the model which you want now or leave it empty\n\nADD ' .joblib ' AT THE END!!!\n") 
+        webpage = input("enter the website which you want to recognaize: \n")
+        if modelName != "":
+            print(makePrediction(webpage, modelName))
+        else:
+            print(makePrediction(webpage))
+            
+    if a == 0:
+        break
