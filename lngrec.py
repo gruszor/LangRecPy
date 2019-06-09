@@ -54,6 +54,18 @@ import numpy as np
 import csv
 from sklearn.naive_bayes import GaussianNB
 from joblib import dump, load
+<<<<<<< Updated upstream
+=======
+import tkinter as tk
+import os
+
+root = tk.Tk()
+root.title("Language recognition")
+
+tk.Label(root, text="Model name").grid(row=0)
+tk.Label(root, text="File with data").grid(row=1)
+tk.Label(root, text="Webpage").grid(row=2)
+>>>>>>> Stashed changes
 
 
 print("welcome in program which recognize languages from webpages!")
