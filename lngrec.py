@@ -1,3 +1,9 @@
+################################################################################
+##############TOMASZ łOCHMANCZYK################################################
+##################LANGUAGE RECOGNITION##########################################
+######################PYTHON 3.7.3##############################################
+#########################2019###################################################
+################################################################################
 languages = {'pl' : 0, 'eng' : 1, 'de' : 2, 'oc' : 3, 'lt' : 4, 'pt' : 5, 'es' : 6}
 inverseLanguages = {val : key for key, val in languages.items()}
 
@@ -7,7 +13,7 @@ def scrap(webpage):
         soup = BeautifulSoup(r.text, 'html.parser')
         return soup.get_text()
     else:
-        return None
+        return r.status_code
 
 def letterCounter(string):
     alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','w','x','y','z']
@@ -20,15 +26,19 @@ def csvIn(txt, file):
 
 def readInput(file):
     return np.genfromtxt(file, delimiter=',')
-
+################################################################################
 def prepareDataToLearn(learn_csv = 'dataToLearn.csv', target_csv = 'target.csv', data_csv = 'data.csv'):
     open(target_csv, 'w').close()
     open(data_csv, 'w').close()
     with open(learn_csv,'r') as file:
         learn = csv.reader(file, dialect='excel')
         for index in learn:
-            csvIn(str(languages[index[1]]), target_csv)
-            csvIn(letterCounter(scrap(index[0])), data_csv)
+            webPage = str(scrap(index[0]))
+            if webPage.isdigit():
+                continue
+            else:
+                csvIn(str(languages[index[1]]), target_csv)
+                csvIn(letterCounter(webPage), data_csv)
 
 def makeModel(model_joblib = 'model.joblib', target_csv = 'target.csv', data_csv = 'data.csv'):
     gnb = GaussianNB()
@@ -38,23 +48,39 @@ def makeModel(model_joblib = 'model.joblib', target_csv = 'target.csv', data_csv
     dump(trainedModel, model_joblib)
 
 def makePrediction(webpage, model_joblib = 'model.joblib'):
-
     model = load(model_joblib)
-    arr = (np.array(letterCounter(scrap(webpage)))).reshape(1,-1)
-    prediction = model.predict(arr)
-    return inverseLanguages[prediction[0]]
-
+    wp = str(scrap(webpage))
+    if wp.isdigit():
+        return wp
+    else:
+        arr = (np.array(letterCounter(wp))).reshape(1,-1)
+        prediction = model.predict(arr)
+        return inverseLanguages[prediction[0]]
+################################################################################
 def create():
-    global INFO
     prepareDataToLearn(e2.get() + '.csv')
     makeModel(e1.get() + '.joblib')
-    INFO = 'sukces'
+    updateDisplay(displayVar, 'success')
 
 def pred():
-    global INFO
     INFO = makePrediction(e3.get(), e1.get() + '.joblib')
-    print(INFO)
+    updateDisplay(displayVar,INFO)
 
+def updateDisplay(var, myString):
+    if myString.isdigit():
+        var.set('ERR: ' + myString)
+    elif myString.endswith('.csv') or myString.endswith('.joblib'):
+        var.set(myString)
+    else:
+        var.set('PRED: ' + myString)
+
+def fileSearch():
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    fileCont = []
+    for root, dirs, files in os.walk(dir_path):
+        for file in files:
+             fileCont.append(str(file))
+    return fileCont
 ##########################################################################################################
 import requests
 from bs4 import BeautifulSoup
@@ -63,9 +89,7 @@ import csv
 from sklearn.naive_bayes import GaussianNB
 from joblib import dump, load
 import tkinter as tk
-
-
-INFO = ''
+import os
 
 root = tk.Tk()
 
@@ -81,17 +105,25 @@ e2.grid(row=1, column=1)
 e3.grid(row=2, column=1)
 
 button = tk.Button(root, text="Create model", command = create).grid(row=3, column=0)
-button2 = tk.Button(root, text="Predict", command = pred).grid(row=3, column=1)
+button2 = tk.Button(root, text="Predict", command = pred).grid(row=3, column=1, sticky='W')
 
-msg = tk.Message(root, textvariable = INFO)
-msg.grid(row=4)
+msg = tk.Message(root)
+displayVar = tk.StringVar()
+updateDisplay(displayVar, 'none')
+msg.config(textvariable = displayVar)
+msg.grid(row=4, columnspan = 2)
 
+r = 0
+for file in fileSearch():
+    if file.endswith('.csv') or file.endswith('.joblib'):
+        msg = tk.Message(root)
+        Var = tk.StringVar()
+        updateDisplay(Var, str(file))
+        msg.config(textvariable = Var)
+        msg.grid(row=r, column = 2, columnspan = 2)
+        r += 1
 
 root.mainloop()
-
-
-
-
 
 
 '''
