@@ -1,0 +1,8 @@
+requests
+bs4
+numpy
+csv
+sklearn
+joblib
+tkinter
+os
